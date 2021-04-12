@@ -63,18 +63,6 @@ app.use(errorController.get404);
 mongoose
   .connect(MONGODB_URL, { useUnifiedTopology: true })
   .then((request) => {
-    User.findOne().then(user => {
-      if(!user) {
-        const user = new User({
-          name: "Taibu",
-          email: "ty@gmail.com",
-          cart: {
-            items: []
-          }
-        })
-        user.save();
-      }
-    })
     app.listen(port, () => {
       console.log(`Server Started at http://localhost:${port}`);
     });
