@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session)
 const csrf = require("csurf");
+const flash = require("connect-flash");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -38,6 +39,8 @@ app.use(session({
 }))
 //after u intalise ur session then add the csrf middleware
 app.use(csrfProtection);
+//Do after u intalised the session
+app.use(flash());
 
 /* app.use((req, res, next) => {
   User.findById("6071fbcf3aa1f024508ce3e3")
@@ -58,6 +61,14 @@ app.use((req, res, next) => {
     })
     .catch((err) => console.log(err));
 });
+
+//after we etract the use but before all our routes
+app.use((req, res, next) => {
+  //allows us to set local variables that are passed to our views
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+})
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
