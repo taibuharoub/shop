@@ -5,6 +5,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session)
+const csrf = require("csurf");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -21,6 +22,8 @@ const store = new MongoDBStore({
   collection: "sessions"
 });
 
+const csrfProtection = csrf();
+
 app.set("view engine", "ejs");
 app.set("views", "views");
 
@@ -33,6 +36,8 @@ app.use(session({
   saveUninitialized: false,
   store: store
 }))
+//after u intalise ur session then add the csrf middleware
+app.use(csrfProtection);
 
 /* app.use((req, res, next) => {
   User.findById("6071fbcf3aa1f024508ce3e3")
