@@ -1,4 +1,6 @@
 const express = require('express');
+// const expValidator = require("express-validator/check"); //import a sub package
+const {check} = require("express-validator/check"); //import a sub package
 
 const authController = require('../controllers/auth');
 
@@ -10,7 +12,7 @@ router.get('/signup', authController.getSignup);
 
 router.post('/login', authController.postLogin);
 
-router.post('/signup', authController.postSignup);
+router.post('/signup', check("email").isEmail().withMessage("Please enter a valid email."), authController.postSignup);
 
 router.post('/logout', authController.postLogout);
 
