@@ -78,7 +78,7 @@ exports.postLogin = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
+  // const confirmPassword = req.body.confirmPassword;
 
   //extract the errors stored from the check midddleware
   //which are avilable on the req
@@ -92,13 +92,13 @@ exports.postSignup = (req, res, next) => {
       errorMessage: errors.array()[0].msg,
     });
   }
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      if (userDoc) {
-        req.flash("error", "An Account with that E-mail already exists.");
-        return res.redirect("/signup");
-      }
-      return bcrypt
+  // User.findOne({ email: email })
+  //   .then((userDoc) => {
+  //     if (userDoc) {
+  //       req.flash("error", "An Account with that E-mail already exists.");
+  //       return res.redirect("/signup");
+  //     } //added this check on the validation in the routes
+      bcrypt
         .hash(password, 12)
         .then((hassedPassword) => {
           const user = new User({
@@ -119,11 +119,7 @@ exports.postSignup = (req, res, next) => {
         })
         .catch((err) => {
           console.log(err);
-        });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+        })
 };
 
 exports.postLogout = (req, res, next) => {
