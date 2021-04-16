@@ -3,15 +3,14 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
-const {validationResult} = require("express-validator")
+const { validationResult } = require("express-validator");
 
 const User = require("../models/user");
 
 const transporter = nodemailer.createTransport(
   sendgridTransport({
     auth: {
-      api_key:
-        "",
+      api_key: "",
     },
   })
 );
@@ -41,12 +40,29 @@ exports.getSignup = (req, res, next) => {
     path: "/signup",
     pageTitle: "Signup",
     errorMessage: message,
+    oldInput: {
+      email: "",
+      password: "",
+      confirmPassword: ""
+    }
   });
 };
 
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+
+  const errors = validationResult(req);
+  // check if there are errors
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render("auth/login", {
+      path: "/login",
+      pageTitle: "Login",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
+
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
@@ -83,13 +99,18 @@ exports.postSignup = (req, res, next) => {
   //extract the errors stored from the check midddleware
   //which are avilable on the req
   const errors = validationResult(req);
-  // check if there are errors 
-  if(!errors.isEmpty()) {
+  // check if there are errors
+  if (!errors.isEmpty()) {
     console.log(errors.array());
     return res.status(422).render("auth/signup", {
       path: "/signup",
       pageTitle: "Signup",
       errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email: email,
+        password: password,
+        confirmPassword: req.body.confirmPassword,
+      },
     });
   }
   // User.findOne({ email: email })
@@ -98,28 +119,28 @@ exports.postSignup = (req, res, next) => {
   //       req.flash("error", "An Account with that E-mail already exists.");
   //       return res.redirect("/signup");
   //     } //added this check on the validation in the routes
-      bcrypt
-        .hash(password, 12)
-        .then((hassedPassword) => {
-          const user = new User({
-            email: email,
-            password: hassedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-          return transporter.sendMail({
-            to: email,
-            from: "",
-            subject: "Signup Successded!",
-            html: `<h1>You successfully signed up!</h1>`,
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
+  bcrypt
+    .hash(password, 12)
+    .then((hassedPassword) => {
+      const user = new User({
+        email: email,
+        password: hassedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      res.redirect("/login");
+      return transporter.sendMail({
+        to: email,
+        from: "",
+        subject: "Signup Successded!",
+        html: `<h1>You successfully signed up!</h1>`,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.postLogout = (req, res, next) => {
@@ -213,20 +234,20 @@ exports.postNewPassword = (req, res, next) => {
     resetTokenExpiration: { $gt: Date.now() },
     _id: userId,
   })
-    .then(user => {
-      //inorder to access the user in the next then block 
+    .then((user) => {
+      //inorder to access the user in the next then block
       //create a global variable assign it to user from this block
       resetUser = user;
       return bcrypt.hash(newPassword, 12);
     })
-    .then(hashedPassword => {
+    .then((hashedPassword) => {
       resetUser.password = hashedPassword;
       resetUser.resetToken = undefined;
       resetUser.resetTokenExpiration = undefined;
       return resetUser.save();
     })
-    .then(result => {
-      res.redirect("/login")
+    .then((result) => {
+      res.redirect("/login");
     })
     .catch((err) => {
       console.log(err);
