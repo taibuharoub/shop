@@ -42,6 +42,14 @@ app.use(csrfProtection);
 //Do after u intalised the session
 app.use(flash());
 
+//after we etract the use but before all our routes
+app.use((req, res, next) => {
+  //allows us to set local variables that are passed to our views
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+})
+
 /* app.use((req, res, next) => {
   User.findById("6071fbcf3aa1f024508ce3e3")
     .then((user) => {
@@ -51,6 +59,9 @@ app.use(flash());
     .catch((err) => console.log(err));
 }); */
 app.use((req, res, next) => {
+  //only works in sync code 
+  //inside async code use next and wrap the error
+  // throw new Error("Sync Dummy");
   if(!req.session.user) {
     return next();
   }
@@ -63,17 +74,9 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => {
-      throw new Error(err)
+      next(new Error(err))
     });
 });
-
-//after we etract the use but before all our routes
-app.use((req, res, next) => {
-  //allows us to set local variables that are passed to our views
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
-  next();
-})
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
@@ -85,7 +88,12 @@ app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
   // res.status(error.httpStatusCode).render(...)
-  res.redirect("/500");
+  // res.redirect("/500");
+  res.status(500).render('500', {
+    pageTitle: 'Error!',
+    path: '/500',
+    isAuthenticated: req.session.isLoggedIn
+  });
 })
 
 mongoose
