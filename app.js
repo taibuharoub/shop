@@ -7,6 +7,7 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session)
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const multer = require("multer");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -30,6 +31,7 @@ app.set("views", "views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(express.urlencoded({extended: true}));
+app.use(multer({dest: "images"}).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(session({
   secret: "Lazy Dog",
@@ -97,7 +99,7 @@ app.use((error, req, res, next) => {
 })
 
 mongoose
-  .connect(MONGODB_URL, { useUnifiedTopology: true })
+  .connect(MONGODB_URL, { useUnifiedTopology: true, useNewUrlParser: true })
   .then((request) => {
     app.listen(port, () => {
       console.log(`Server Started at http://localhost:${port}`);
