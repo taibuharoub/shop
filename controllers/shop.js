@@ -169,14 +169,31 @@ exports.getInvoice = (req, res, next) => {
 
       const pdfDoc = new PDFDocument();
       res.setHeader("Content-Type", "application/pdf");
-        res.setHeader(
-          "Content-Disposition",
-          'inline; filename="' + invoiceName + '"'
-        );
+      res.setHeader(
+        "Content-Disposition",
+        'inline; filename="' + invoiceName + '"'
+      );
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
       pdfDoc.pipe(res);
 
-      pdfDoc.text("Hello World");
+      pdfDoc.fontSize(26).text("Invoice", {
+        underline: true,
+      });
+      pdfDoc.text("-----------------------");
+      let totlalPrice = 0;
+      order.products.forEach((prod) => {
+        totlalPrice += prod.quantity * prod.product.price;
+        pdfDoc.fontSize(14).text(
+          prod.product.title +
+            " - " +
+            prod.quantity +
+            " x " +
+            "$" +
+            prod.product.price
+        );
+      });
+      pdfDoc.text("---")
+      pdfDoc.fontSize(20).text("Total Price: $" + totlalPrice);
       pdfDoc.end();
 
       // fs.readFile(invoicePath, (err, data) => {
@@ -192,15 +209,14 @@ exports.getInvoice = (req, res, next) => {
       // }); //good for small files
 
       //instead will stream the response data/large files
-    //   const file = fs.createReadStream(invoicePath);
-    //   res.setHeader("Content-Type", "application/pdf");
-    //     res.setHeader(
-    //       "Content-Disposition",
-    //       'inline; filename="' + invoiceName + '"'
-    //     );
-    //   file.pipe(res);
-    // })
-    
+      //   const file = fs.createReadStream(invoicePath);
+      //   res.setHeader("Content-Type", "application/pdf");
+      //     res.setHeader(
+      //       "Content-Disposition",
+      //       'inline; filename="' + invoiceName + '"'
+      //     );
+      //   file.pipe(res);
+      // })
     })
     .catch((err) => next(err));
 };
