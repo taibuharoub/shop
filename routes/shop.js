@@ -21,7 +21,11 @@ router.post('/cart-delete-item', isAuth, shopController.postCartDeleteProduct);
 
 router.get("/checkout", isAuth, shopController.getCheckout)
 
-router.post('/create-order', isAuth, shopController.postOrder);
+router.get("/checkout/success", shopController.getCheckoutSuccess)
+router.get("/checkout/cancel", shopController.getCheckout)
+
+//don't need this route anymore coz we have a new checkout flow
+// router.post('/create-order', isAuth, shopController.postOrder);
 
 router.get('/orders', isAuth, shopController.getOrders);
 router.get("/orders/:orderId", isAuth, shopController.getInvoice);
