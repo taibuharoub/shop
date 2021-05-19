@@ -16,6 +16,7 @@ const User = require("./models/user");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+const webhookRoute = require("./routes/webhook");
 
 const MONGODB_URL = "mongodb://localhost:27017/local-shop";
 const app = express();
@@ -108,6 +109,7 @@ app.use((req, res, next) => {
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
+app.use(webhookRoute);
 
 app.get("/500", errorController.get500);
 
