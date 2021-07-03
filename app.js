@@ -9,6 +9,7 @@ const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
 const helmet = require("helmet");
+const compression = require("compression");
 require('dotenv').config()
 
 const errorController = require("./controllers/error");
@@ -54,6 +55,7 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(helmet());
+app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(express.urlencoded({extended: true}));
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single("image"));
