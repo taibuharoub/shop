@@ -4,3 +4,4 @@ config/config.env
 # dotenv environment variables file
 .env
 .env.test
+nodemon.json

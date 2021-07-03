@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "start:dev": "nodemon app.js"
   },
   "author": "Taibu Haroub",
   "license": "ISC",
@@ -31,5 +32,8 @@
     "pug": "^3.0.2",
     "sequelize": "^6.5.1",
     "stripe": "^8.148.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.9"
   }
 }

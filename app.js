@@ -18,9 +18,9 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 const webhookRoute = require("./routes/webhook");
 
-const MONGODB_URL = "mongodb://localhost:27017/local-shop";
+const MONGODB_URL = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.rnpgx.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
-port = 3000;
+port = process.env.PORT || 3000;
 const store = new MongoDBStore({
   uri: MONGODB_URL,
   collection: "sessions",
