@@ -1,4 +1,6 @@
 const path = require("path");
+const fs = require("fs");
+
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const express = require("express");
@@ -10,6 +12,7 @@ const flash = require("connect-flash");
 const multer = require("multer");
 const helmet = require("helmet");
 const compression = require("compression");
+const morgan = require("morgan");
 require('dotenv').config()
 
 const errorController = require("./controllers/error");
@@ -19,6 +22,11 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 const webhookRoute = require("./routes/webhook");
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a"}
+);
 
 const MONGODB_URL = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.rnpgx.mongodb.net/${process.env.MONGO_DATABASE}`;
 const app = express();
@@ -56,6 +64,7 @@ app.set("views", "views");
 
 app.use(helmet());
 app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(express.urlencoded({extended: true}));
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single("image"));
