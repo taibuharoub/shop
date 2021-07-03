@@ -8,6 +8,7 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require("helmet");
 require('dotenv').config()
 
 const errorController = require("./controllers/error");
@@ -52,6 +53,7 @@ const fileFilter = (req, file, cb) => {
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(express.urlencoded({extended: true}));
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single("image"));
@@ -118,7 +120,7 @@ app.use(errorController.get404);
 app.use((error, req, res, next) => {
   // res.status(error.httpStatusCode).render(...)
   // res.redirect("/500");
-  console.log(error);
+  // console.log(error);
   res.status(500).render("500", {
     pageTitle: "Error!",
     path: "/500",
