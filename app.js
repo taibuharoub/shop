@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const https = require("https")
 
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
@@ -37,6 +38,11 @@ const store = new MongoDBStore({
 });
 
 const csrfProtection = csrf();
+
+//read in the certf files
+//readFileSync will block execution
+const privateKey = fs.readFileSync("server.key");
+const certificate = fs.readFileSync("server.cert");
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -142,7 +148,10 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGODB_URL, { useUnifiedTopology: true, useNewUrlParser: true })
   .then((request) => {
-    app.listen(port, () => {
+    /* app.listen(port, () => {
+      console.log(`Server Started at http://localhost:${port}`);
+    }); */
+    https.createServer({key: privateKey, cert: certificate}, app).listen(port, () => {
       console.log(`Server Started at http://localhost:${port}`);
     });
   })
