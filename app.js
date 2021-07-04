@@ -148,12 +148,12 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGODB_URL, { useUnifiedTopology: true, useNewUrlParser: true })
   .then((request) => {
-    /* app.listen(port, () => {
-      console.log(`Server Started at http://localhost:${port}`);
-    }); */
-    https.createServer({key: privateKey, cert: certificate}, app).listen(port, () => {
+    app.listen(port, () => {
       console.log(`Server Started at http://localhost:${port}`);
     });
+    /* https.createServer({key: privateKey, cert: certificate}, app).listen(port, () => {
+      console.log(`Server Started at http://localhost:${port}`);
+    }); */
   })
   .catch((err) => {
     console.log(err);
