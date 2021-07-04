@@ -5,3 +5,5 @@ config/config.env
 .env
 .env.test
 nodemon.json
+server.cert
+server.key
