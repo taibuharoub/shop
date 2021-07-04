@@ -14,6 +14,7 @@ const multer = require("multer");
 const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
+const cors = require("cors");
 require('dotenv').config()
 
 const errorController = require("./controllers/error");
@@ -69,7 +70,36 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(helmet());
+const scriptSrcUrls = [
+  "https://ty-node-shop.herokuapp.com/",
+  "https://js.stripe.com/v3/",
+  "https://js.stripe.com/",
+  "https://stripe.com/"
+]
+
+app.use(
+  helmet.contentSecurityPolicy({
+      directives: {
+          defaultSrc: ["https://ty-node-shop.herokuapp.com/",
+          "https://js.stripe.com/v3/",
+          "https://js.stripe.com/",
+          "https://stripe.com/"],
+          connectSrc: ["'self'"],
+          scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          workerSrc: ["'self'", "blob:"],
+          objectSrc: [],
+          imgSrc: [
+              "'self'",
+              "blob:",
+              "data:"
+          ],
+          fontSrc: ["'self'"],
+      },
+  })
+);
 app.use(compression());
+app.use(cors());
 app.use(morgan("combined", { stream: accessLogStream }));
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(express.urlencoded({extended: true}));
